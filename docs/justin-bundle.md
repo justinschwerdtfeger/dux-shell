@@ -56,81 +56,60 @@ On conflict, manually resolve the upstream merge in the fork and update the reco
 then push `justin-stable` for verification. A race after uploading assets can
 leave a draft; it does not publish an obsolete candidate.
 
-## Activation and bootstrap (future, explicitly authorized operations)
+## Stable base and activation
 
-The local `justin-stable` branch currently preserves the development history
-where this implementation was prepared. It is not yet based on a reviewed
-upstream stable release. Preserve this implementation on a backup branch before
-reconstructing `justin-stable` from stable; do not merge development master into
-the shipping branch. The checked-in record contains null values and intentionally
-fails validation until bootstrapped. No release URL or checksum in this
-implementation refers to a claimed existing asset.
+`justin-stable` is based on published upstream `v2.0.0`, commit
+`9b413296b16721f7679fb62e624cb1ed2433fa58`, plus Justin's widget-inset
+feature and the bundle automation. Its submodule stays at the release's pinned
+commit. The stable record is populated and passes local ancestry validation.
+The former development-based branch is preserved locally as
+`justin-stable-development-backup` at `617e7237809b4a6fe1b2d637732380281a046dc0`.
+No development master merge is needed.
 
-1. Review and commit the implementation in Justin's fork when authorized. Put
-   `justin-bundle.yml` on default branch `master` for scheduled runs. Keep
-   `JUSTIN_DMS_ENABLED` unset while bootstrapping. Do not run the upstream-style
-   release/port workflows or provision their GitHub App/satellite repo secrets.
-2. Once upstream reads are authorized, choose a published, non-prerelease stable
-   `vX.Y.Z` release. Fetch only that tag from
-   `https://github.com/duxlabs-dev/dux-shell.git`, record its peeled commit, and
-   preserve the current branch as `justin-stable-development-backup`, then
-   recreate `justin-stable` at that commit. Cherry-pick only Justin's intended
-   feature patches, then bring the reviewed fork `.github/`
-   configuration, the three `scripts/justin-*` scripts, `scripts/test_justin_stable.py`,
-   and this document from the implementation commit onto it. Do not merge
-   development master as a shortcut. With `origin` confirmed as Justin's fork,
-   the future preparation commands are below. Commit all intended local changes
-   first; the clean-tree check and non-forcing branch rename protect the existing
-   work. These steps assume `justin-stable` has not been published; if it has,
-   coordinate the branch replacement separately without force-pushing it.
+The old development-based `justin-stable` was already published to Justin's fork
+at that same backup commit. The corrected branch intentionally has different
+history. The following publication and activation steps have not been performed:
+
+1. Keep `JUSTIN_DMS_ENABLED` unset or false while publishing. Preserve the old
+   branch remotely, then replace only Justin's shipping branch with an explicit
+   lease. Confirm `origin` is Justin's fork first. If the remote branch has
+   advanced beyond the known old commit, the lease must fail; inspect those
+   changes instead of removing the lease or overwriting them.
 
    ```sh
-   : "${STABLE_TAG:?Set the reviewed published stable vX.Y.Z tag}"
-   : "${AUTOMATION_COMMIT:?Set the reviewed implementation commit}"
-   test -z "$(git status --porcelain)"
-   git fetch --no-tags https://github.com/duxlabs-dev/dux-shell.git "refs/tags/$STABLE_TAG"
-   UPSTREAM_COMMIT=$(git rev-parse 'FETCH_HEAD^{commit}')
-   git switch justin-stable
-   git branch -m justin-stable-development-backup
-   git switch -c justin-stable "$UPSTREAM_COMMIT"
-   # Cherry-pick the intended fork feature commits here, before restoring files.
-   git restore --source="$AUTOMATION_COMMIT" --staged --worktree -- \
-     .github scripts/justin-stable.py scripts/justin-bundle.sh \
-     scripts/justin-publish.sh scripts/test_justin_stable.py docs/justin-bundle.md
-   python3 - "$STABLE_TAG" "$UPSTREAM_COMMIT" <<'PY'
-   import json
-   from pathlib import Path
-   import sys
-   Path('.github/justin/upstream-stable.json').write_text(
-       json.dumps({'tag': sys.argv[1], 'commit': sys.argv[2]}, indent=2) + '\n')
-   PY
-   git add .github/justin/upstream-stable.json
-   git submodule update --init --recursive
-   python3 scripts/justin-stable.py
+   git remote get-url origin
+   git push origin refs/heads/justin-stable-development-backup:refs/heads/justin-stable-development-backup
+   git push --force-with-lease=refs/heads/justin-stable:617e7237809b4a6fe1b2d637732380281a046dc0 \
+     origin refs/heads/justin-stable:refs/heads/justin-stable
    ```
-3. Set `.github/justin/upstream-stable.json` to
-   `{"tag":"<chosen stable vX.Y.Z>","commit":"<actual peeled 40-character commit>"}`.
-   Verify that this stable base supports `distro_binary withshell`, the pinned
-   DCommon submodule, the existing test entry points and the asset paths used by
-   `justin-bundle.sh`. An older stable without these needs a reviewed port of the
-   packaging/embed changes or a later suitable stable; copying all of master is
-   not a substitute. Run the checks before committing and pushing the branch.
-4. Enable Actions in the fork; set `JUSTIN_DMS_ENABLED=true`. Allow the workflow's
-   `GITHUB_TOKEN` `contents:write` on this fork's tags/releases and shipping branch.
-   No PAT, GitHub App or cross-repository secret is needed. Branch protection
-   that blocks bot pushes causes a safe failure and must be reconciled with the
-   desired direct-promotion policy. Dispatch **Justin stable bundle**, initially
-   with `sync=false`; inspect tests, metadata, checksums and published assets.
-5. Activate image consumption using `DMS-FORK.md` in `justin-bazzite-dx` after
-   that first real release exists. Subsequent daily sync checks read upstream;
-   they never push upstream or create PRs/issues/comments anywhere.
 
-Scheduled workflows run from the default branch. Keep this workflow and helper
-changes coordinated on `master` and `justin-stable`. Upstream `.github/` updates
-are deliberately excluded; review CI changes separately on the fork. Changes to
-other workflow files in shipping commits may require manual publication with
-appropriately authorized workflow permissions; no broad credential is stored by
-this pipeline to bypass GitHub's workflow-file restrictions.
+2. For scheduled runs, set the fork's default branch to `justin-stable` in
+   repository settings. `master` can remain a development branch. Alternatively,
+   keep `master` as default and bring just the reviewed workflow onto it; the
+   workflow always checks out the shipping branch and uses its helpers. Do not
+   merge development master into `justin-stable` to install automation.
+3. Enable Actions in Justin's fork and allow this workflow's `GITHUB_TOKEN`
+   `contents:write` for the fork's tags/releases and shipping branch. Set the
+   repository Actions variable `JUSTIN_DMS_ENABLED` to `true`. No PAT, GitHub App
+   or cross-repository secret is needed. Branch protection that blocks bot pushes
+   causes a failure and must be reconciled with direct shipping-branch updates.
+   Do not dispatch the upstream-style release/port workflows or provision their
+   GitHub App/satellite repository secrets.
+4. Dispatch **Justin stable bundle** on `justin-stable`, initially with
+   `sync=false`. Inspect the checks, metadata, checksums and published assets.
+   Subsequent daily checks read published upstream stable releases, preserve
+   Justin's patches and publish only after checks pass. They never push upstream
+   or create PRs, issues or comments anywhere.
+5. Follow `DMS-FORK.md` in `justin-bazzite-dx` after the first real bundle exists.
+   Reconcile that checkout with its newer `origin/main`, populate the image lock,
+   and review and publish the image changes before building the image. The lock
+   remains unconfigured until a real successful bundle has been published.
+
+Upstream `.github/` updates are deliberately excluded from sync merges; review
+CI changes separately on the fork. Changes to other workflow files in shipping
+commits may require manual publication with appropriately authorized workflow
+permissions; this pipeline does not store a broader credential to bypass that
+restriction.
 
 The image independently polls only successful **published fork bundles** on its
 daily build and dispatch, commits the exact release/hash in its own repository,

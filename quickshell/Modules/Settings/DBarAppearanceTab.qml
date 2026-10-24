@@ -728,8 +728,10 @@ Item {
             }
 
             SettingsSliderRow {
+                settingKey: "barWidgetPadding"
                 text: I18n.tr("Padding")
-                tags: ["widget", "padding", "spacing", "compact", "remove"]
+                description: I18n.tr("Gap between widgets")
+                tags: ["widget", "padding", "spacing", "gap", "compact", "remove"]
                 resetStore: bar
                 resetKeys: ["widgetPadding"]
                 value: bar.selectedBarConfig?.widgetPadding ?? 8

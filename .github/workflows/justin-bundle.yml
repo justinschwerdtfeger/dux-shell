@@ -1,0 +1,81 @@
+name: Justin stable bundle
+
+on:
+  schedule:
+    - cron: '17 7 * * *'
+  push:
+    branches: [justin-stable]
+  workflow_dispatch:
+    inputs:
+      sync:
+        description: Read and merge the newest upstream stable release before testing
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: justin-stable-bundle
+  cancel-in-progress: false
+
+jobs:
+  bundle:
+    if: >-
+      github.repository == 'justinschwerdtfeger/dux-shell' &&
+      vars.JUSTIN_DMS_ENABLED == 'true' &&
+      (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/justin-stable')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: justin-stable
+          fetch-depth: 0
+
+      - name: Prepare stable candidate
+        env:
+          SYNC: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.sync) }}
+        run: |
+          set -euo pipefail
+          echo "BASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [[ "$SYNC" == true ]]; then
+            python3 scripts/justin-stable.py --sync
+          else
+            python3 scripts/justin-stable.py
+          fi
+          git submodule update --init --recursive
+          test -f quickshell/DCommon/Widgets/DIcon.qml
+          echo "FORK_VERSION=justin-$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "FORK_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "BUILD_TIME=$(git show -s --format=%cd --date=format:%Y-%m-%d_%H:%M:%S HEAD)" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: core/go.mod
+          cache-dependency-path: core/go.sum
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Verify candidate
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_justin_*.py'
+          (cd core && go test -race -timeout 120s ./...)
+          nix develop --no-write-lock-file --command bash -euo pipefail -c \
+            'make test-qml QMLTESTRUNNER="$(command -v qmltestrunner)"'
+
+      - name: Build embedded distribution bundle
+        run: |
+          set -euo pipefail
+          make -C core dist ARCH=amd64 DIST_OSES=linux \
+            VERSION="$FORK_VERSION" COMMIT="$FORK_COMMIT" BUILD_TIME="$BUILD_TIME"
+          core/bin/dms-linux-amd64 version
+          bash scripts/justin-bundle.sh "$RUNNER_TEMP/bundle"
+
+      - name: Publish in Justin's fork and promote shipping branch
+        run: bash scripts/justin-publish.sh "$RUNNER_TEMP/bundle"

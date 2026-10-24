@@ -1523,6 +1523,7 @@ var LOCAL_SPEC = {
                 rightWidgets: ["systemTray", "clipboard", "cpuUsage", "memUsage", "notificationButton", "battery", "controlCenterButton"],
                 spacing: 4,
                 innerPadding: 2,
+                widgetInset: -1,
                 barInsetPadding: -1,
                 barLengthPadding: 0,
                 barLengthMode: "full",

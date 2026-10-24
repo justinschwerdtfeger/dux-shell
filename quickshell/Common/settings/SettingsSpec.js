@@ -1526,7 +1526,8 @@ var LOCAL_SPEC = {
                 rightWidgets: ["systemTray", "clipboard", "cpuUsage", "memUsage", "notificationButton", "battery", "controlCenterButton"],
                 spacing: 4,
                 innerPadding: 2,
-                barInsetPadding: -1,
+                barInsetPaddingStart: -1,
+                barInsetPaddingEnd: -1,
                 barLengthPadding: 0,
                 barLengthMode: "full",
                 barLengthPercent: 80,
@@ -1665,7 +1666,10 @@ var LOCAL_SPEC = {
     frameMode: {
         def: "connected"
     },
-    barInsetPaddingShared: {
+    barInsetPaddingStartShared: {
+        def: -1
+    },
+    barInsetPaddingEndShared: {
         def: -1
     },
     barInsetPaddingSyncAll: {

@@ -46,10 +46,12 @@ Item {
     readonly property var overflowSections: _barIsVertical ? [vLeftSection, vCenterSection, vRightSection] : [hLeftSection, hCenterSection, hRightSection]
     readonly property real overflowLength: fitToWidgets ? barWindow.fittedAvailableLength : (_barIsVertical ? height : width)
     readonly property string overflowCenteringMode: SettingsData.centeringMode
+    readonly property real centerOffset: fitToWidgets || _usesFrameBarChrome ? 0 : (fittedEndMargin - fittedStartMargin) / 2
 
     onOverflowLengthChanged: requestOverflowLayout()
     onOverflowSectionsChanged: requestOverflowLayout()
     onOverflowCenteringModeChanged: requestOverflowLayout()
+    onCenterOffsetChanged: requestOverflowLayout()
     onReservedStartChanged: requestOverflowLayout()
     onReservedEndChanged: requestOverflowLayout()
     onFittedStartMarginChanged: requestOverflowLayout()
@@ -81,6 +83,7 @@ Item {
             triggerSize: overflowSections[0].overflowTriggerSize,
             positions,
             centeringMode: overflowCenteringMode,
+            centerOffset,
             confineCenter: fitToWidgets,
             restoreMargin: Theme.spacingS
         }, overflowPlan.hidden);
@@ -137,11 +140,9 @@ Item {
     readonly property bool hasAdjacentLeftBarLive: _hasBarWindow && barWindow.hasAdjacentLeftBar
     readonly property bool hasAdjacentRightBarLive: _hasBarWindow && barWindow.hasAdjacentRightBar
 
-    // Standalone/separate Bar Inset Padding (per-bar, optionally synced): absolute gap at BOTH ends.
-    // Stored value < 0 (default -1) means "auto" — fall back to the natural edge margin so the look is unchanged.
-    readonly property real _barInsetPaddingRaw: SettingsData.barInsetPaddingSyncAll ? SettingsData.barInsetPaddingShared : (barConfig?.barInsetPadding ?? -1)
     readonly property real _barInsetPaddingAuto: _barIsVertical ? Theme.spacingXS : _edgeBaseMargin
-    readonly property real _barInsetPadding: _barInsetPaddingRaw < 0 ? _barInsetPaddingAuto : _barInsetPaddingRaw
+    readonly property real _barInsetPaddingStart: SettingsData.barInsetPaddingFor(barConfig, false, _barInsetPaddingAuto)
+    readonly property real _barInsetPaddingEnd: SettingsData.barInsetPaddingFor(barConfig, true, _barInsetPaddingAuto)
     // Hosted bars span their edge fully; frameBarContentGap is the free-end gap measured from the
     // screen edge (auto = frameThickness, aligning widgets with the interior cutout).
     readonly property real _frameInsetResolved: SettingsData.frameBarContentGap
@@ -158,14 +159,14 @@ Item {
             return _edgeBaseMargin;
         if (_usesFrameBarChrome)
             return hasAdjacentLeftBarLive ? _cornerAlignInset : _frameInsetResolved;
-        return Math.max(0, _barInsetPadding);
+        return Math.max(0, _barInsetPaddingStart);
     }
     readonly property real _rightMargin: {
         if (_barIsVertical)
             return _edgeBaseMargin;
         if (_usesFrameBarChrome)
             return hasAdjacentRightBarLive ? _cornerAlignInset : _frameInsetResolved;
-        return Math.max(0, _barInsetPadding);
+        return Math.max(0, _barInsetPaddingEnd);
     }
     readonly property real _topMargin: {
         if (!_barIsVertical)
@@ -174,7 +175,7 @@ Item {
             const inset = ShellLayout.frameContentInset(barWindow.screen, barConfig?.id, "top");
             return inset !== null ? _edgeBaseMargin + inset + _frameInsetExtra : _frameInsetResolved;
         }
-        return Math.max(0, _barInsetPadding);
+        return Math.max(0, _barInsetPaddingStart);
     }
     readonly property real _bottomMargin: {
         if (!_barIsVertical)
@@ -183,7 +184,7 @@ Item {
             const inset = ShellLayout.frameContentInset(barWindow.screen, barConfig?.id, "bottom");
             return inset !== null ? _edgeBaseMargin + inset + _frameInsetExtra : _frameInsetResolved;
         }
-        return Math.max(0, _barInsetPadding);
+        return Math.max(0, _barInsetPaddingEnd);
     }
 
     property alias hLeftSection: hLeftSection

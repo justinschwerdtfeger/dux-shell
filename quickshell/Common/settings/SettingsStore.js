@@ -752,6 +752,25 @@ function migrateToVersion(obj, targetVersion) {
         settings.configVersion = 42;
     }
 
+    if (currentVersion < 43 && targetVersion >= 43) {
+        const bars = Array.isArray(settings.barConfigs) ? settings.barConfigs : [];
+        for (const bar of bars) {
+            if (!bar || typeof bar !== "object")
+                continue;
+            if ((bar.barInsetPaddingStart ?? -1) < 0)
+                bar.barInsetPaddingStart = bar.barInsetPadding ?? -1;
+            if ((bar.barInsetPaddingEnd ?? -1) < 0)
+                bar.barInsetPaddingEnd = bar.barInsetPadding ?? -1;
+            delete bar.barInsetPadding;
+        }
+        if ((settings.barInsetPaddingStartShared ?? -1) < 0)
+            settings.barInsetPaddingStartShared = settings.barInsetPaddingShared ?? -1;
+        if ((settings.barInsetPaddingEndShared ?? -1) < 0)
+            settings.barInsetPaddingEndShared = settings.barInsetPaddingShared ?? -1;
+        delete settings.barInsetPaddingShared;
+        settings.configVersion = 43;
+    }
+
     return settings;
 }
 

@@ -23,7 +23,7 @@ Singleton {
     id: root
     readonly property var log: Log.scoped("SettingsData")
 
-    readonly property int settingsConfigVersion: 42
+    readonly property int settingsConfigVersion: 43
 
     enum Position {
         Top,
@@ -379,8 +379,10 @@ Singleton {
     }
     property real frameThickness: Spec.SPEC.frameThickness.def
     onFrameThicknessChanged: saveSettings()
-    property int barInsetPaddingShared: Spec.SPEC.barInsetPaddingShared.def
-    onBarInsetPaddingSharedChanged: saveSettings()
+    property int barInsetPaddingStartShared: Spec.SPEC.barInsetPaddingStartShared.def
+    onBarInsetPaddingStartSharedChanged: saveSettings()
+    property int barInsetPaddingEndShared: Spec.SPEC.barInsetPaddingEndShared.def
+    onBarInsetPaddingEndSharedChanged: saveSettings()
     property bool barInsetPaddingSyncAll: Spec.SPEC.barInsetPaddingSyncAll.def
     onBarInsetPaddingSyncAllChanged: saveSettings()
     property int frameBarInsetPadding: Spec.SPEC.frameBarInsetPadding.def
@@ -2451,6 +2453,11 @@ Singleton {
         if (config?.widgetFollowInterfaceStyle !== false)
             return Theme.foregroundAlpha;
         return config?.widgetTransparency ?? 1.0;
+    }
+
+    function barInsetPaddingFor(config, end = false, autoPadding = 0) {
+        const side = barInsetPaddingSyncAll ? (end ? barInsetPaddingEndShared : barInsetPaddingStartShared) : (end ? config?.barInsetPaddingEnd : config?.barInsetPaddingStart);
+        return (side ?? -1) < 0 ? autoPadding : side;
     }
 
     function barSurfaceColor(config) {

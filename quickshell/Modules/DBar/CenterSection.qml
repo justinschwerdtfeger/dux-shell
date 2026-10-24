@@ -13,10 +13,12 @@ BarSection {
     property real contentStart: 0
     property real contentSize: 0
     readonly property var bounds: barContent?.centerBounds ?? null
+    readonly property real centerOffset: barContent?.centerOffset ?? 0
     entryRepeater: centerRepeater
     onLayoutRequested: layoutTimer.restart()
 
     onBoundsChanged: layoutTimer.restart()
+    onCenterOffsetChanged: layoutTimer.restart()
 
     function requestLayout() {
         layoutTimer.restart();
@@ -64,7 +66,7 @@ BarSection {
         applyRoles(entries, participating);
 
         const inline = inlineLayout();
-        const layout = CenterLayout.resolve(inline.sizes, length, widgetSpacing, SettingsData.centeringMode, bounds, inline.anchor);
+        const layout = CenterLayout.resolve(inline.sizes, length, widgetSpacing, SettingsData.centeringMode, bounds, inline.anchor, centerOffset);
         for (let index = 0; index < inline.indices.length; index++) {
             if (inline.indices[index] === -1) {
                 overflowButtonPosition = layout.positions[index];

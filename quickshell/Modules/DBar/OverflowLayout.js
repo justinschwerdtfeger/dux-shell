@@ -87,7 +87,7 @@ function measure(sections, hidden, options) {
         min: min + (leading > 0 ? leading + gap : 0),
         max: max - (trailing > 0 ? trailing + gap : 0)
     } : null;
-    const centered = CenterLayout.resolve(center.sizes, options.length, gap, options.centeringMode ?? "geometric", bounds, center.anchor);
+    const centered = CenterLayout.resolve(center.sizes, options.length, gap, options.centeringMode ?? "geometric", bounds, center.anchor, options.centerOffset ?? 0);
     const livePositions = centered.positions.filter(position => position !== null);
     const centerStart = livePositions.length ? Math.min(...livePositions) : 0;
     const intervals = {

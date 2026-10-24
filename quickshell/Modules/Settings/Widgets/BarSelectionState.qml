@@ -70,9 +70,15 @@ Item {
 
     // inset padding stores < 0 as "auto", resolved here to the mode's natural inset
     readonly property real insetPadAutoUI: (SettingsData.connectedFrameModeActive && root.selectedBarFrameStyled) ? SettingsData.frameThickness : (selectedBarIsVertical ? Theme.spacingXS : Math.max(Theme.spacingXS, (selectedBarConfig?.innerPadding ?? 2) * 0.8))
-    readonly property int insetPadDisplayValue: {
-        const raw = SettingsData.barInsetPaddingSyncAll ? SettingsData.barInsetPaddingShared : (selectedBarConfig?.barInsetPadding ?? -1);
-        return raw < 0 ? Math.round(insetPadAutoUI) : raw;
+    readonly property int insetPadDisplayValue: Math.round(SettingsData.barInsetPaddingFor(selectedBarConfig, false, insetPadAutoUI))
+    readonly property int insetPadEndDisplayValue: Math.round(SettingsData.barInsetPaddingFor(selectedBarConfig, true, insetPadAutoUI))
+
+    function setInsetPadding(value, end = false) {
+        if (SettingsData.barInsetPaddingSyncAll) {
+            SettingsData.set(end ? "barInsetPaddingEndShared" : "barInsetPaddingStartShared", value);
+            return;
+        }
+        apply(end ? "barInsetPaddingEnd" : "barInsetPaddingStart", value);
     }
 
     Timer {

@@ -4967,6 +4967,30 @@
     "icon": "border_style"
   },
   {
+    "section": "barInsetPaddingEnd",
+    "label": "Bottom",
+    "tabIndex": 6,
+    "category": "Appearance",
+    "keywords": [
+      "appearance",
+      "bar",
+      "bottom",
+      "corner",
+      "edge",
+      "end",
+      "gap",
+      "inset",
+      "padding",
+      "panel",
+      "right",
+      "statusbar",
+      "taskbar",
+      "topbar"
+    ],
+    "parentLabel": "Bar",
+    "description": "Inset padding"
+  },
+  {
     "section": "islandHomeBrightnessDisplay",
     "label": "Brightness style",
     "tabIndex": 6,
@@ -5617,9 +5641,6 @@
     "keywords": [
       "appearance",
       "bar",
-      "between",
-      "components",
-      "ends",
       "font",
       "gap",
       "gaps",
@@ -5628,8 +5649,6 @@
       "length",
       "margin",
       "margins",
-      "modules",
-      "outermost",
       "padding",
       "panel",
       "scale",
@@ -5637,12 +5656,10 @@
       "spacing",
       "statusbar",
       "taskbar",
-      "topbar",
-      "widgets"
+      "topbar"
     ],
     "parentLabel": "Bar",
-    "icon": "space_bar",
-    "description": "Gap between the bar ends and the outermost widgets"
+    "icon": "space_bar"
   },
   {
     "section": "islandHomeStatusContent",
@@ -5741,6 +5758,30 @@
     ],
     "parentLabel": "Bar",
     "conditionKey": "frameEnabled"
+  },
+  {
+    "section": "barInsetPaddingStart",
+    "label": "Top",
+    "tabIndex": 6,
+    "category": "Appearance",
+    "keywords": [
+      "appearance",
+      "bar",
+      "corner",
+      "edge",
+      "end",
+      "gap",
+      "inset",
+      "left",
+      "padding",
+      "panel",
+      "statusbar",
+      "taskbar",
+      "top",
+      "topbar"
+    ],
+    "parentLabel": "Bar",
+    "description": "Inset padding"
   },
   {
     "section": "islandHomeVolumeDisplay",

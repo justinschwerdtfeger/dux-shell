@@ -27,7 +27,7 @@ function confine(start, totalSize, bounds) {
     return Math.min(Math.max(start, min), max - totalSize);
 }
 
-function resolve(sizes, length, spacing, mode, bounds, anchor) {
+function resolve(sizes, length, spacing, mode, bounds, anchor, offset = 0) {
     const indices = [];
     const offsets = [];
     const positions = sizes.map(() => null);
@@ -49,7 +49,7 @@ function resolve(sizes, length, spacing, mode, bounds, anchor) {
         };
 
     const centerOffset = mode === "geometric" ? totalSize / 2 : indexCenter(sizes, indices, offsets, spacing, anchor);
-    const start = confine(length / 2 - centerOffset, totalSize, bounds);
+    const start = confine(length / 2 + offset - centerOffset, totalSize, bounds);
     for (let i = 0; i < indices.length; i++)
         positions[indices[i]] = start + offsets[i];
     return {

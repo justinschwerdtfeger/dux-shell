@@ -512,26 +512,35 @@ Item {
             }
 
             SettingsSliderRow {
+                settingKey: "barInsetPaddingStart"
                 visible: !bar.selectedBarFrameStyled
-                text: I18n.tr("Inset padding")
-                description: I18n.tr("Gap between the bar ends and the outermost widgets", "bar inset padding slider description")
-                tags: ["bar", "padding", "inset", "edge", "corner", "end", "gap"]
+                text: bar.selectedBarIsVertical ? I18n.tr("Top", "screen edge position") : I18n.tr("Left", "screen edge position")
+                description: I18n.tr("Inset padding")
+                tags: ["bar", "padding", "inset", "edge", "corner", "end", "gap", "left", "top"]
                 minimumLabel: I18n.tr("Edge to edge", "slider minimum label, bar touches the screen edges")
                 resetStore: SettingsData.barInsetPaddingSyncAll ? SettingsData : bar
-                resetKeys: SettingsData.barInsetPaddingSyncAll ? ["barInsetPaddingShared"] : ["barInsetPadding"]
+                resetKeys: SettingsData.barInsetPaddingSyncAll ? ["barInsetPaddingStartShared"] : ["barInsetPaddingStart"]
                 unit: "px"
                 minimum: 0
                 maximum: 48
                 value: bar.insetPadDisplayValue
-                onSliderDragFinished: finalValue => {
-                    if (SettingsData.barInsetPaddingSyncAll) {
-                        SettingsData.set("barInsetPaddingShared", finalValue);
-                        return;
-                    }
-                    SettingsData.updateBarConfig(bar.selectedBarId, {
-                        barInsetPadding: finalValue
-                    });
-                }
+                onSliderDragFinished: finalValue => bar.setInsetPadding(finalValue)
+            }
+
+            SettingsSliderRow {
+                settingKey: "barInsetPaddingEnd"
+                visible: !bar.selectedBarFrameStyled
+                text: bar.selectedBarIsVertical ? I18n.tr("Bottom", "screen edge position") : I18n.tr("Right", "screen edge position")
+                description: I18n.tr("Inset padding")
+                tags: ["bar", "padding", "inset", "edge", "corner", "end", "gap", "right", "bottom"]
+                minimumLabel: I18n.tr("Edge to edge", "slider minimum label, bar touches the screen edges")
+                resetStore: SettingsData.barInsetPaddingSyncAll ? SettingsData : bar
+                resetKeys: SettingsData.barInsetPaddingSyncAll ? ["barInsetPaddingEndShared"] : ["barInsetPaddingEnd"]
+                unit: "px"
+                minimum: 0
+                maximum: 48
+                value: bar.insetPadEndDisplayValue
+                onSliderDragFinished: finalValue => bar.setInsetPadding(finalValue, true)
             }
 
             SettingsToggleRow {

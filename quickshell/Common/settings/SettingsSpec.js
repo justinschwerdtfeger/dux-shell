@@ -1524,7 +1524,8 @@ var LOCAL_SPEC = {
                 spacing: 4,
                 innerPadding: 2,
                 widgetInset: -1,
-                barInsetPadding: -1,
+                barInsetPaddingStart: -1,
+                barInsetPaddingEnd: -1,
                 barLengthPadding: 0,
                 barLengthMode: "full",
                 barLengthPercent: 80,
@@ -1663,7 +1664,10 @@ var LOCAL_SPEC = {
     frameMode: {
         def: "connected"
     },
-    barInsetPaddingShared: {
+    barInsetPaddingStartShared: {
+        def: -1
+    },
+    barInsetPaddingEndShared: {
         def: -1
     },
     barInsetPaddingSyncAll: {

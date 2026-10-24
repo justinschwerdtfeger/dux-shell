@@ -706,8 +706,7 @@ Item {
             SettingsSliderRow {
                 settingKey: "barWidgetPadding"
                 text: I18n.tr("Padding")
-                description: I18n.tr("Gap between widgets")
-                tags: ["widget", "padding", "spacing", "gap", "compact", "remove"]
+                tags: ["widget", "padding", "compact", "remove"]
                 resetStore: bar
                 resetKeys: ["widgetPadding"]
                 value: bar.selectedBarConfig?.widgetPadding ?? 8
@@ -716,6 +715,22 @@ Item {
                 unit: "px"
                 onSliderValueChanged: newValue => SettingsData.updateBarConfig(bar.selectedBarId, {
                         widgetPadding: newValue
+                    })
+            }
+
+            SettingsSliderRow {
+                settingKey: "barWidgetSpacing"
+                text: I18n.tr("Spacing")
+                description: I18n.tr("Gap between widgets")
+                tags: ["widget", "spacing", "gap", "compact"]
+                resetStore: bar
+                resetKeys: ["widgetSpacing"]
+                value: bar.selectedBarConfig?.widgetSpacing ?? 0
+                minimum: 0
+                maximum: 32
+                unit: "px"
+                onSliderValueChanged: newValue => SettingsData.updateBarConfig(bar.selectedBarId, {
+                        widgetSpacing: newValue
                     })
             }
 

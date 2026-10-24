@@ -1545,6 +1545,7 @@ var LOCAL_SPEC = {
                 maximizeWidgetIcons: false,
                 maximizeWidgetText: false,
                 widgetPadding: 8,
+                widgetSpacing: 0,
                 batteryColorMode: "theme",
                 gothCornersEnabled: false,
                 gothCornerRadiusOverride: false,

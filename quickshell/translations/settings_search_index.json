@@ -5470,23 +5470,16 @@
     "keywords": [
       "appearance",
       "bar",
-      "between",
       "compact",
-      "components",
-      "gap",
-      "modules",
       "padding",
       "panel",
       "remove",
-      "spacing",
       "statusbar",
       "taskbar",
       "topbar",
-      "widget",
-      "widgets"
+      "widget"
     ],
-    "parentLabel": "Bar",
-    "description": "Gap between widgets"
+    "parentLabel": "Bar"
   },
   {
     "section": "islandPalette",
@@ -5690,6 +5683,34 @@
     ],
     "parentLabel": "Bar",
     "icon": "space_bar"
+  },
+  {
+    "section": "barWidgetSpacing",
+    "label": "Spacing",
+    "tabIndex": 6,
+    "category": "Appearance",
+    "keywords": [
+      "appearance",
+      "bar",
+      "between",
+      "compact",
+      "components",
+      "gap",
+      "gaps",
+      "margin",
+      "margins",
+      "modules",
+      "padding",
+      "panel",
+      "spacing",
+      "statusbar",
+      "taskbar",
+      "topbar",
+      "widget",
+      "widgets"
+    ],
+    "parentLabel": "Bar",
+    "description": "Gap between widgets"
   },
   {
     "section": "islandHomeStatusContent",

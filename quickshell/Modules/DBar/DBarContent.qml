@@ -32,8 +32,8 @@ Item {
     readonly property real fittedStartMargin: _barIsVertical ? _topMargin : _leftMargin
     readonly property real fittedEndMargin: _barIsVertical ? _bottomMargin : _rightMargin
     readonly property real fittedAvailableSize: fitToWidgets ? Math.max(1, barWindow.fittedAvailableLength - fittedStartMargin - fittedEndMargin) : 0
-    readonly property real fittedLeadingReach: leadingImplicitSize > 0 ? leadingImplicitSize + sectionGap : 0
-    readonly property real fittedTrailingReach: trailingImplicitSize > 0 ? trailingImplicitSize + sectionGap : 0
+    readonly property real fittedLeadingReach: leadingImplicitSize > 0 ? leadingImplicitSize + (centerImplicitSize > 0 || trailingImplicitSize > 0 ? sectionGap : 0) : 0
+    readonly property real fittedTrailingReach: trailingImplicitSize > 0 ? trailingImplicitSize + (centerImplicitSize > 0 || leadingImplicitSize > 0 ? sectionGap : 0) : 0
     readonly property var fittedCenterSection: _barIsVertical ? vCenterSection : hCenterSection
     property var overflowPlan: ({
             hidden: {

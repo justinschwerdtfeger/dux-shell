@@ -160,7 +160,7 @@ Item {
     readonly property bool isVertical: overrideAxisLayout ? forceVerticalLayout : (axis?.isVertical ?? false)
     readonly property bool segmented: widgetStyle === "segments" && !noBackground
     readonly property real outlineThickness: (barConfig?.widgetOutlineEnabled ?? false) ? (barConfig?.widgetOutlineThickness ?? Theme.outlineWidth) : 0
-    readonly property real widgetSpacing: (segmented ? BarMetrics.segmentGap : noBackground ? BarMetrics.bareGap : BarMetrics.pillGap) + outlineThickness * 2
+    readonly property real widgetSpacing: (segmented ? BarMetrics.segmentGap : noBackground ? BarMetrics.bareGap : BarMetrics.pillGap) + Math.max(0, barConfig?.widgetPadding ?? 8) + outlineThickness * 2
 
     function refreshBlur() {
         blurBarWindow?.refreshBlurRegion?.();

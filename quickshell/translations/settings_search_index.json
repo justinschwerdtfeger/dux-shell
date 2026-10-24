@@ -5463,6 +5463,32 @@
     "conditionKey": "islandEnabled"
   },
   {
+    "section": "barWidgetPadding",
+    "label": "Padding",
+    "tabIndex": 6,
+    "category": "Appearance",
+    "keywords": [
+      "appearance",
+      "bar",
+      "between",
+      "compact",
+      "components",
+      "gap",
+      "modules",
+      "padding",
+      "panel",
+      "remove",
+      "spacing",
+      "statusbar",
+      "taskbar",
+      "topbar",
+      "widget",
+      "widgets"
+    ],
+    "parentLabel": "Bar",
+    "description": "Gap between widgets"
+  },
+  {
     "section": "islandPalette",
     "label": "Palette",
     "tabIndex": 6,

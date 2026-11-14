@@ -69,7 +69,7 @@ Item {
     }
 
     // inset padding stores < 0 as "auto", resolved here to the mode's natural inset
-    readonly property real insetPadAutoUI: (SettingsData.connectedFrameModeActive && root.selectedBarFrameStyled) ? SettingsData.frameThickness : (selectedBarIsVertical ? Theme.spacingXS : Math.max(Theme.spacingXS, (selectedBarConfig?.innerPadding ?? 2) * 0.8))
+    readonly property real insetPadAutoUI: (SettingsData.connectedFrameModeActive && root.selectedBarFrameStyled) ? SettingsData.frameThickness : (selectedBarIsVertical ? Theme.spacingXS : Math.max(Theme.spacingXS, (selectedBarConfig?.innerPadding ?? SettingsData.barInnerPaddingDefault) * 0.8))
     readonly property int insetPadDisplayValue: Math.round(SettingsData.barInsetPaddingFor(selectedBarConfig, false, insetPadAutoUI))
     readonly property int insetPadEndDisplayValue: Math.round(SettingsData.barInsetPaddingFor(selectedBarConfig, true, insetPadAutoUI))
 
